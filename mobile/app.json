@@ -1,0 +1,25 @@
+{
+  "expo": {
+    "name": "Landscape AI",
+    "slug": "landscape-ai",
+    "scheme": "landscapeai",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.alexg1128.landscapeai",
+      "infoPlist": {
+        "NSCameraUsageDescription": "Landscape AI uses your camera to photograph your yard for design suggestions.",
+        "NSPhotoLibraryUsageDescription": "Landscape AI needs access to your photos to analyze a yard image you choose.",
+        "NSLocationWhenInUseUsageDescription": "Landscape AI uses your location to recommend plants suited to your climate and find nearby stores."
+      }
+    },
+    "plugins": [
+      "expo-router",
+      "expo-image-picker",
+      "expo-location"
+    ]
+  }
+}
