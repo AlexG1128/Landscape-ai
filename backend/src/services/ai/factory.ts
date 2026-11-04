@@ -1,6 +1,7 @@
 import { config } from '../../config.js';
 import type { AIProvider } from './types.js';
 import { MockAIProvider } from './mockProvider.js';
+import { GeminiAIProvider } from './geminiProvider.js';
 
 /**
  * Returns the configured AI provider.
@@ -26,9 +27,12 @@ import { MockAIProvider } from './mockProvider.js';
  */
 export function createAIProvider(): AIProvider {
   switch (config.ai.provider) {
-    // case 'gemini':
-    //   if (!config.ai.apiKey) break;
-    //   return new GeminiAIProvider(config.ai.apiKey);
+    case 'gemini':
+      if (!config.ai.apiKey) {
+        console.warn('[ai] AI_PROVIDER=gemini but AI_API_KEY is empty — using mock instead.');
+        return new MockAIProvider();
+      }
+      return new GeminiAIProvider(config.ai.apiKey);
 
     case 'mock':
     default:

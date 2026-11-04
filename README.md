@@ -75,11 +75,18 @@ Everything runs with mocks by default. To enable live features, edit `backend/.e
 GOOGLE_PLACES_API_KEY=your_key_here     # https://developers.google.com/maps/documentation/places/web-service
 
 # --- AI provider (yard analysis + redesign) ---
-AI_PROVIDER=mock                        # mock | (add your own, e.g. "gemini")
-AI_API_KEY=your_key_here
+AI_PROVIDER=gemini                      # mock | gemini
+AI_API_KEY=your_gemini_key_here         # https://aistudio.google.com/  ("Get API key")
 ```
 
 Then restart the backend. The app automatically uses real data wherever a key is present and falls back to mocks where it isn't.
+
+### How the real AI (Gemini) works
+With `AI_PROVIDER=gemini`, the backend makes two calls to Google Gemini for each yard photo:
+1. **`gemini-2.5-flash` (vision)** reads the photo and returns structured JSON — detected features, sun exposure, and 4–6 plant picks chosen from the app's catalog, each with a reason and placement.
+2. **`gemini-2.5-flash-image` (image editing)** takes your actual photo and redesigns it in place — keeping your house and perspective while adding the landscaping — and returns the new image.
+
+If either Gemini call fails (bad key, quota, network), the backend automatically falls back to mock output so the app never breaks.
 
 ---
 
