@@ -22,6 +22,7 @@ export interface Plant {
   matureHeightFt?: [number, number];
   description: string;
   tags: string[];
+  imageUrl?: string;
 }
 
 export interface Suggestion {

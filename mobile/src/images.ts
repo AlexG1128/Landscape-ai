@@ -8,7 +8,11 @@ import { categoryColor, categoryEmoji } from './theme';
  * To use a REAL photo later: add an `imageUrl` field to the plant and prefer
  * it here — this becomes the graceful fallback.
  */
-export function plantImage(category: string, name: string): string {
+export function plantImage(category: string, name: string, imageUrl?: string): string {
+  // Prefer a real photo when one is provided (e.g. generated via the Gemini
+  // script, or from a free image source).
+  if (imageUrl && imageUrl.length > 0) return imageUrl;
+
   const color = categoryColor[category] ?? '#5a9e6f';
   const emoji = categoryEmoji[category] ?? '🌱';
   const light = shade(color, 0.85);

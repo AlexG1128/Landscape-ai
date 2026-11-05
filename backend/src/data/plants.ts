@@ -1,10 +1,11 @@
 import type { Plant } from '../types.js';
+import { createRequire } from 'node:module';
 
 /**
  * Curated starter catalog. In production this can be swapped for a plant API
  * (e.g. Perenual / Trefle) behind the same Plant shape.
  */
-export const PLANTS: Plant[] = [
+const BASE_PLANTS: Plant[] = [
   {
     id: 'emerald-arborvitae',
     name: 'Emerald Green Arborvitae',
@@ -958,6 +959,26 @@ export const PLANTS: Plant[] = [
     tags: ['seed', 'edible', 'culinary', 'container', 'starter'],
   },
 ];
+
+/**
+ * Optional generated/real plant photos, keyed by plant id. Produced by
+ * `scripts/generate-plant-images.ts`. When present for a plant, it becomes that
+ * plant's `imageUrl`. Safe to be absent (the app falls back to illustrations).
+ */
+function loadPlantImages(): Record<string, string> {
+  try {
+    const require = createRequire(import.meta.url);
+    return require('./plant-images.json') as Record<string, string>;
+  } catch {
+    return {};
+  }
+}
+
+const PLANT_IMAGES = loadPlantImages();
+
+export const PLANTS: Plant[] = BASE_PLANTS.map((p) =>
+  PLANT_IMAGES[p.id] ? { ...p, imageUrl: PLANT_IMAGES[p.id] } : p,
+);
 
 export const getPlantById = (id: string): Plant | undefined =>
   PLANTS.find((p) => p.id === id);

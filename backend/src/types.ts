@@ -27,6 +27,11 @@ export interface Plant {
   description: string;
   /** Tags used by the suggestion engine, e.g. "evergreen", "pollinator", "drought-tolerant". */
   tags: string[];
+  /**
+   * Optional real photo URL (or relative path served by the app). When present,
+   * the UI shows this instead of the generated illustration.
+   */
+  imageUrl?: string;
 }
 
 /** A single recommended plant plus the reasoning shown to the user. */

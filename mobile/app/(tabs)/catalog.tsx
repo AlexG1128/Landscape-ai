@@ -84,7 +84,7 @@ export default function Catalog() {
               style={styles.card}
               onPress={() => router.push(`/plant/${p.id}`)}
             >
-              <Image source={{ uri: plantImage(p.category, p.name) }} style={styles.cardImg} />
+              <Image source={{ uri: plantImage(p.category, p.name, p.imageUrl) }} style={styles.cardImg} />
               <View style={styles.cardBody}>
                 <Text style={styles.name} numberOfLines={1}>
                   {p.name}

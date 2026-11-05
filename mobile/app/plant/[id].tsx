@@ -35,7 +35,7 @@ export default function PlantDetailScreen() {
 
   return (
     <ScrollView style={{ backgroundColor: theme.colors.bg }} contentContainerStyle={styles.container}>
-      <Image source={{ uri: plantImage(plant.category, plant.name) }} style={styles.hero} />
+      <Image source={{ uri: plantImage(plant.category, plant.name, plant.imageUrl) }} style={styles.hero} />
 
       <Text style={styles.name}>{plant.name}</Text>
       {!!plant.scientificName && <Text style={styles.sci}>{plant.scientificName}</Text>}

@@ -94,6 +94,24 @@ If either Gemini call fails (bad key, quota, network), the backend automatically
 
 ---
 
+## 🖼️ Generating real plant photos (optional)
+
+The catalog ships with elegant generated **illustrations** for every plant. To replace them with **real AI-generated photos** using your Gemini key, run the generator on your Mac:
+
+```bash
+cd backend
+# Cheap test run — just the first 3 plants:
+AI_API_KEY=your_gemini_key LIMIT=3 npx tsx scripts/generate-plant-images.ts
+# Or a single plant by name:
+AI_API_KEY=your_gemini_key ONLY=rose npx tsx scripts/generate-plant-images.ts
+# All 69:
+AI_API_KEY=your_gemini_key npx tsx scripts/generate-plant-images.ts
+```
+
+Images are saved to `backend/src/data/plant-images.json` and are served automatically — restart the backend to see them. Re-running skips plants that already have an image, so it's safe to resume.
+
+> ⚠️ This uses the **paid Gemini image model** (the free tier limit is 0), so each image incurs a small cost. Start with `LIMIT=3` to confirm quality and billing before generating all 69. Any plant without a generated photo keeps its illustration.
+
 ## 🗺️ Roadmap (post-MVP)
 - Real image-to-image redesign model integration
 - Save/compare before & after designs

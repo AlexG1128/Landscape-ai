@@ -20,6 +20,7 @@ import { api } from '../../src/api';
 import { theme } from '../../src/theme';
 import { heroImage } from '../../src/images';
 import { Button, Card } from '../../src/components';
+import { SideMenu, MenuButton } from '../../src/SideMenu';
 import {
   getFolders,
   getEntries,
@@ -38,6 +39,7 @@ export default function Home() {
   const [folderId, setFolderId] = useState<string>('front-yard');
   const [entries, setEntries] = useState<HistoryEntry[]>([]);
   const [expandedFolder, setExpandedFolder] = useState<string | null>(null);
+  const [menuOpen, setMenuOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
   // Refresh folders + saved designs whenever Home regains focus.
@@ -141,6 +143,9 @@ export default function Home() {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: theme.colors.bg }} edges={['top']}>
+      <View style={styles.topBar}>
+        <MenuButton onPress={() => setMenuOpen(true)} />
+      </View>
       <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
         {/* Hero splash */}
         <View style={styles.hero}>
@@ -292,12 +297,26 @@ export default function Home() {
           </View>
         )}
       </ScrollView>
+
+      <SideMenu
+        open={menuOpen}
+        onClose={() => setMenuOpen(false)}
+        folders={folders}
+        entries={entries}
+      />
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { padding: theme.spacing(2), paddingBottom: theme.spacing(4) },
+  topBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: theme.spacing(2),
+    paddingTop: theme.spacing(1),
+    paddingBottom: theme.spacing(0.5),
+  },
+  container: { padding: theme.spacing(2), paddingTop: theme.spacing(1), paddingBottom: theme.spacing(4) },
   hero: {
     height: 220,
     borderRadius: theme.radius.lg,

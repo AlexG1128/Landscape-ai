@@ -130,19 +130,12 @@ export default function History() {
   return (
     <>
       <ScrollView style={{ backgroundColor: theme.colors.bg }} contentContainerStyle={styles.container}>
-        {pinned.length > 0 && (
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>📌 Pinned</Text>
-            {pinned.map((e) => renderRow(e, true))}
-          </View>
-        )}
-
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>🗂️ Folders</Text>
           {folders.map((folder) => {
             const items = entries.filter((e) => e.folderId === folder.id);
             return (
-              <View key={folder.id} style={{ marginBottom: theme.spacing(1.5) }}>
+              <View key={folder.id} style={{ marginBottom: theme.spacing(1) }}>
                 <View style={styles.folderHead}>
                   <Ionicons name="folder" size={15} color={theme.colors.primary} />
                   <Text style={styles.folderName}>{folder.name}</Text>
@@ -157,6 +150,13 @@ export default function History() {
             );
           })}
         </View>
+
+        {pinned.length > 0 && (
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>📌 Pinned</Text>
+            {pinned.map((e) => renderRow(e, true))}
+          </View>
+        )}
 
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>🕘 Recent</Text>
@@ -239,11 +239,11 @@ const styles = StyleSheet.create({
     borderColor: theme.colors.border,
     marginBottom: 7,
   },
-  rowMain: { flex: 1, flexDirection: 'row', alignItems: 'center', padding: 7 },
-  thumb: { width: 40, height: 40, borderRadius: 8, marginRight: 10 },
-  rowTitle: { color: theme.colors.text, fontSize: 14, fontWeight: '700' },
-  rowMeta: { color: theme.colors.textMuted, fontSize: 11, marginTop: 1 },
-  menuBtn: { paddingVertical: 10, paddingHorizontal: 12 },
+  rowMain: { flex: 1, flexDirection: 'row', alignItems: 'center', padding: 6 },
+  thumb: { width: 34, height: 34, borderRadius: 7, marginRight: 9 },
+  rowTitle: { color: theme.colors.text, fontSize: 13.5, fontWeight: '700' },
+  rowMeta: { color: theme.colors.textMuted, fontSize: 10.5, marginTop: 1 },
+  menuBtn: { paddingVertical: 8, paddingHorizontal: 11 },
   folderHead: { flexDirection: 'row', alignItems: 'center', gap: 7, marginBottom: 7 },
   folderName: { color: theme.colors.text, fontWeight: '700', fontSize: 15, flex: 1 },
   count: {
