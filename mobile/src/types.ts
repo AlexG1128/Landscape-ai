@@ -33,6 +33,7 @@ export interface Suggestion {
 export interface RedesignResult {
   imageUrl: string;
   description: string;
+  available: boolean;
 }
 
 export interface YardAnalysis {

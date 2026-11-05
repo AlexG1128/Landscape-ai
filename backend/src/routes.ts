@@ -56,15 +56,16 @@ export async function registerRoutes(app: FastifyInstance) {
       image: z.string().min(1, 'image (base64) is required'),
       lat: z.number().optional(),
       lng: z.number().optional(),
+      note: z.string().max(1000).optional(),
     });
     const parsed = schema.safeParse(req.body);
     if (!parsed.success) {
       return reply.code(400).send({ error: parsed.error.flatten() });
     }
-    const { image, lat, lng } = parsed.data;
+    const { image, lat, lng, note } = parsed.data;
     const zone = estimateZoneFromLat(lat);
 
-    const analysis = await ai.analyzeYard({ image, zone, lat, lng });
+    const analysis = await ai.analyzeYard({ image, zone, lat, lng, note });
     return { zone, analysis };
   });
 

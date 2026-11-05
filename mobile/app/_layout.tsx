@@ -9,16 +9,16 @@ export default function RootLayout() {
       <StatusBar style="dark" />
       <Stack
         screenOptions={{
-          headerStyle: { backgroundColor: theme.colors.primary },
-          headerTintColor: '#fff',
+          headerStyle: { backgroundColor: theme.colors.bg },
+          headerShadowVisible: false,
+          headerTintColor: theme.colors.text,
           headerTitleStyle: { fontWeight: '800' },
           contentStyle: { backgroundColor: theme.colors.bg },
         }}
       >
-        <Stack.Screen name="index" options={{ title: '🌿 Landscape AI' }} />
-        <Stack.Screen name="catalog" options={{ title: 'Plant Catalog' }} />
-        <Stack.Screen name="stores" options={{ title: 'Where to Buy' }} />
-        <Stack.Screen name="plant/[id]" options={{ title: 'Plant' }} />
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="plant/[id]" options={{ title: 'Plant', headerBackTitle: 'Back' }} />
+        <Stack.Screen name="result/[id]" options={{ title: 'Your Design', headerBackTitle: 'Back' }} />
       </Stack>
     </SafeAreaProvider>
   );

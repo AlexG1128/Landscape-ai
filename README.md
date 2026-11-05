@@ -10,12 +10,16 @@ Point your phone at your front or back yard and get **AI-powered landscaping sug
 
 | Feature | How it works | MVP status |
 |---|---|---|
-| 📸 **Yard capture** | Take/upload a photo in the app | ✅ Built |
-| 🤖 **AI suggestions** | Photo + location → recommended plants with reasons | ✅ Built (mock; swappable for real model) |
-| 🖼️ **Visual redesign** | Photo → AI-generated "after" image | ✅ Built (mock; swappable for real model) |
-| 🌱 **Plant catalog** | Browse plants, flowers, vegetables, trees, seeds | ✅ Built (curated catalog) |
+| 📸 **Yard capture** | Add a photo + an optional note describing what you want | ✅ Built |
+| 🤖 **AI suggestions** | Photo + note + location → recommended plants with reasons | ✅ Built (mock; swappable for real model) |
+| 🖼️ **Visual redesign** | Photo → AI-generated "after" image with a **before/after slider** | ✅ Built (mock; real via Gemini) |
+| 🌱 **Plant catalog** | Browse 69 plants with imagery — flowers, shrubs, trees, veg, herbs, groundcovers, grasses, seeds | ✅ Built (curated catalog) |
+| 🗂️ **History & folders** | Saved designs organized into folders (Front Yard, Back Yard, custom) | ✅ Built (stored on-device) |
 | 📍 **Hardiness zone** | Location → USDA zone → smarter picks | ✅ Built |
 | 🛒 **Where to buy** | Nearby stores via Google Places + retailer deep links | ✅ Built (mock; swappable for real Google Places key) |
+
+### UI
+Elegant, modern design with a hero home screen, **bottom tab navigation** (Home · Catalog · Stores · History), illustrated plant imagery, and a draggable before/after redesign reveal.
 
 ---
 

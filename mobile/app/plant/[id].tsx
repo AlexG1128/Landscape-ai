@@ -1,15 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import {
-  ScrollView,
-  Text,
-  View,
-  StyleSheet,
-  ActivityIndicator,
-  Linking,
-} from 'react-native';
+import { ScrollView, Text, View, Image, StyleSheet, ActivityIndicator, Linking } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
 import { api } from '../../src/api';
-import { theme, categoryEmoji } from '../../src/theme';
+import { theme, categoryColor, categoryEmoji } from '../../src/theme';
+import { plantImage } from '../../src/images';
 import { Button, Card, Chip, SectionTitle } from '../../src/components';
 import type { PlantDetail } from '../../src/types';
 
@@ -33,24 +28,20 @@ export default function PlantDetailScreen() {
     };
   }, [id]);
 
-  if (loading) {
-    return <ActivityIndicator color={theme.colors.primary} style={{ marginTop: 40 }} />;
-  }
-  if (error || !data) {
-    return <Text style={styles.error}>{error ?? 'Not found'}</Text>;
-  }
+  if (loading) return <ActivityIndicator color={theme.colors.primary} style={{ marginTop: 40 }} />;
+  if (error || !data) return <Text style={styles.error}>{error ?? 'Not found'}</Text>;
 
   const { plant, buyLinks } = data;
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.name}>
-        {categoryEmoji[plant.category] ?? '🌱'} {plant.name}
-      </Text>
+    <ScrollView style={{ backgroundColor: theme.colors.bg }} contentContainerStyle={styles.container}>
+      <Image source={{ uri: plantImage(plant.category, plant.name) }} style={styles.hero} />
+
+      <Text style={styles.name}>{plant.name}</Text>
       {!!plant.scientificName && <Text style={styles.sci}>{plant.scientificName}</Text>}
 
       <View style={styles.chipRow}>
-        <Chip label={plant.category} />
+        <Chip label={plant.category} color={categoryColor[plant.category]} />
         <Chip label={plant.sun} />
         <Chip label={`${plant.water} water`} />
         <Chip label={`zones ${plant.zones[0]}–${plant.zones[1]}`} />
@@ -83,16 +74,17 @@ export default function PlantDetailScreen() {
           onPress={() => router.push(`/stores?query=${encodeURIComponent(plant.name)}`)}
         />
       </Card>
-      <View style={{ height: 30 }} />
+      <View style={{ height: 24 }} />
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: { padding: theme.spacing(2) },
-  name: { fontSize: 24, fontWeight: '900', color: theme.colors.text },
-  sci: { fontStyle: 'italic', color: theme.colors.muted, marginBottom: 10 },
+  hero: { width: '100%', height: 180, borderRadius: theme.radius.md, marginBottom: theme.spacing(2) },
+  name: { ...theme.font.h1, color: theme.colors.text },
+  sci: { fontStyle: 'italic', color: theme.colors.textFaint, marginBottom: 10 },
   chipRow: { flexDirection: 'row', flexWrap: 'wrap', marginVertical: 8 },
-  body: { color: theme.colors.text, lineHeight: 22, fontSize: 15 },
-  error: { color: '#b00020', margin: 24 },
+  body: { ...theme.font.body, color: theme.colors.text, lineHeight: 23, fontSize: 15 },
+  error: { color: theme.colors.danger, margin: 24 },
 });

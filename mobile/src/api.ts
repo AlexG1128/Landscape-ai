@@ -35,7 +35,7 @@ export const api = {
     return json<PlantDetail>(await fetch(`${API_URL}/plants/${id}`));
   },
 
-  async analyze(input: { image: string; lat?: number; lng?: number }) {
+  async analyze(input: { image: string; lat?: number; lng?: number; note?: string }) {
     const res = await fetch(`${API_URL}/analyze`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },

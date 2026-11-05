@@ -50,6 +50,12 @@ export interface RedesignResult {
   imageUrl: string;
   /** Human-readable description of the redesign vision. */
   description: string;
+  /**
+   * True when `imageUrl` is a real AI-generated redesign of the user's photo.
+   * False when it's a placeholder (mock mode, or the image model was
+   * unavailable / not enabled on the current plan).
+   */
+  available: boolean;
 }
 
 export interface Store {

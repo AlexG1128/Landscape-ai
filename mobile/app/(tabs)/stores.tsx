@@ -1,18 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import {
-  ScrollView,
-  Text,
-  View,
-  StyleSheet,
-  ActivityIndicator,
-  Linking,
-} from 'react-native';
+import { ScrollView, Text, View, StyleSheet, ActivityIndicator, Linking } from 'react-native';
 import * as Location from 'expo-location';
 import { useLocalSearchParams } from 'expo-router';
-import { api } from '../src/api';
-import { theme } from '../src/theme';
-import { Button, Card } from '../src/components';
-import type { StoresResponse } from '../src/types';
+import { Ionicons } from '@expo/vector-icons';
+import { api } from '../../src/api';
+import { theme } from '../../src/theme';
+import { Button, Card } from '../../src/components';
+import type { StoresResponse } from '../../src/types';
 
 export default function Stores() {
   const params = useLocalSearchParams<{ query?: string }>();
@@ -47,14 +41,12 @@ export default function Stores() {
   }, [params.query]);
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      {params.query ? (
-        <Text style={styles.header}>Where to buy “{params.query}”</Text>
-      ) : (
-        <Text style={styles.header}>Nearby garden & hardware stores</Text>
-      )}
+    <ScrollView style={{ backgroundColor: theme.colors.bg }} contentContainerStyle={styles.container}>
+      <Text style={styles.header}>
+        {params.query ? `Where to buy "${params.query}"` : 'Nearby garden & hardware stores'}
+      </Text>
 
-      {loading && <ActivityIndicator color={theme.colors.primary} style={{ marginTop: 20 }} />}
+      {loading && <ActivityIndicator color={theme.colors.primary} style={{ marginTop: 24 }} />}
       {error && <Text style={styles.error}>{error}</Text>}
 
       {data?.buyLinks?.length ? (
@@ -62,7 +54,7 @@ export default function Stores() {
           <Text style={styles.cardTitle}>Shop online</Text>
           {data.buyLinks.map((l) => (
             <View key={l.name} style={{ marginTop: 8 }}>
-              <Button title={`Search ${l.name}`} variant="outline" onPress={() => Linking.openURL(l.url)} />
+              <Button title={`Search ${l.name}`} variant="ghost" onPress={() => Linking.openURL(l.url)} />
             </View>
           ))}
         </Card>
@@ -70,15 +62,16 @@ export default function Stores() {
 
       {data?.stores.map((s) => (
         <Card key={s.id}>
-          <Text style={styles.name}>{s.name}</Text>
+          <View style={styles.storeHead}>
+            <Ionicons name="storefront" size={20} color={theme.colors.primary} />
+            <Text style={styles.name}>{s.name}</Text>
+          </View>
           <Text style={styles.addr}>{s.address}</Text>
           <View style={styles.metaRow}>
-            {s.distanceMiles !== undefined && (
-              <Text style={styles.meta}>📍 {s.distanceMiles} mi</Text>
-            )}
+            {s.distanceMiles !== undefined && <Text style={styles.meta}>📍 {s.distanceMiles} mi</Text>}
             {s.rating !== undefined && <Text style={styles.meta}>⭐ {s.rating}</Text>}
             {s.openNow !== undefined && (
-              <Text style={[styles.meta, { color: s.openNow ? theme.colors.primary : '#b00020' }]}>
+              <Text style={[styles.meta, { color: s.openNow ? theme.colors.success : theme.colors.danger }]}>
                 {s.openNow ? 'Open now' : 'Closed'}
               </Text>
             )}
@@ -94,19 +87,20 @@ export default function Stores() {
       {!loading && !data?.stores.length && !error && (
         <Text style={styles.empty}>No stores found.</Text>
       )}
-      <View style={{ height: 30 }} />
+      <View style={{ height: 20 }} />
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: { padding: theme.spacing(2) },
-  header: { fontSize: 20, fontWeight: '800', color: theme.colors.text, marginBottom: 12 },
-  cardTitle: { fontSize: 16, fontWeight: '800', color: theme.colors.text },
-  name: { fontSize: 17, fontWeight: '800', color: theme.colors.text },
-  addr: { color: theme.colors.muted, marginTop: 2 },
-  metaRow: { flexDirection: 'row', gap: 14, marginTop: 8 },
-  meta: { color: theme.colors.text, fontWeight: '600' },
-  error: { color: '#b00020', marginTop: 16 },
-  empty: { color: theme.colors.muted, textAlign: 'center', marginTop: 24 },
+  header: { ...theme.font.h2, color: theme.colors.text, marginBottom: 14 },
+  cardTitle: { ...theme.font.h3, color: theme.colors.text },
+  storeHead: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  name: { ...theme.font.h3, color: theme.colors.text, flex: 1 },
+  addr: { color: theme.colors.textMuted, marginTop: 4 },
+  metaRow: { flexDirection: 'row', gap: 16, marginTop: 10 },
+  meta: { color: theme.colors.text, fontWeight: '600', fontSize: 13 },
+  error: { color: theme.colors.danger, marginTop: 16 },
+  empty: { color: theme.colors.textMuted, textAlign: 'center', marginTop: 30 },
 });

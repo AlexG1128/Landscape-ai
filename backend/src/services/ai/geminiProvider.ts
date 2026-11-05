@@ -41,7 +41,23 @@ export class GeminiAIProvider implements AIProvider {
         }),
       ]);
 
-      if (redesign) analysis.redesign = redesign;
+      if (redesign) {
+        // Real AI redesign succeeded.
+        analysis.redesign = { ...redesign, available: true };
+      } else {
+        // Image model unavailable (e.g. not on the current plan). Borrow the
+        // mock's placeholder image + description so the UI never shows a blank,
+        // and mark it as not a real redesign.
+        const mock = await this.fallback.analyzeYard(input);
+        analysis.redesign = {
+          imageUrl: mock.redesign.imageUrl,
+          description:
+            'AI redesign images are not available on your current Gemini plan, so this is a ' +
+            'preview. Your plant suggestions below are real. Enable billing on your Gemini ' +
+            'API project to generate a redesigned photo of your actual yard.',
+          available: false,
+        };
+      }
       return analysis;
     } catch (err) {
       console.error('[gemini] analyzeYard failed, falling back to mock:', err);
@@ -66,12 +82,17 @@ export class GeminiAIProvider implements AIProvider {
     const prompt = [
       'You are a professional landscape designer. Analyze this yard photo.',
       `The user is in USDA hardiness zone ${input.zone}.`,
+      input.note
+        ? `The user specifically wants: "${input.note}". Prioritize this in your picks and reasoning.`
+        : '',
       'Choose 4-6 plants ONLY from the provided catalog that suit this specific yard',
       '(consider the detected sun exposure, existing features, and the hardiness zone).',
       'For each pick, give a short reason tied to what you see, and a placement in the yard.',
       'Here is the catalog you must choose from (use the exact id):',
       JSON.stringify(catalogForPrompt),
-    ].join('\n');
+    ]
+      .filter(Boolean)
+      .join('\n');
 
     const schema = {
       type: 'OBJECT',
@@ -141,14 +162,14 @@ export class GeminiAIProvider implements AIProvider {
       detectedFeatures: parsed.detectedFeatures,
       estimatedSun: parsed.estimatedSun,
       suggestions,
-      // Placeholder; replaced by getRedesign() if that succeeds.
-      redesign: { imageUrl: '', description: '' },
+      // Placeholder; always replaced in analyzeYard() before returning.
+      redesign: { imageUrl: '', description: '', available: false },
     };
   }
 
   // ---- 2. Image-to-image redesign ----
   private async getRedesign(
-    _input: AnalyzeInput,
+    input: AnalyzeInput,
     mime: string,
     data: string,
   ): Promise<{ imageUrl: string; description: string }> {
@@ -156,7 +177,8 @@ export class GeminiAIProvider implements AIProvider {
       'Redesign this exact yard with professional landscaping. Keep the house, ' +
       'structures, and perspective unchanged. Add tasteful, climate-appropriate ' +
       'planting beds, layered shrubs and flowers against bare walls, a tidy mulched ' +
-      'border, and ground cover along edges. Make it look realistic and photographic.';
+      'border, and ground cover along edges. Make it look realistic and photographic.' +
+      (input.note ? ` The homeowner specifically wants: ${input.note}.` : '');
 
     const res = await fetch(
       `${this.base}/models/${this.imageModel}:generateContent?key=${this.apiKey}`,

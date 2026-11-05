@@ -101,6 +101,7 @@ export class MockAIProvider implements AIProvider {
       suggestions: suggestions.slice(0, 6),
       redesign: {
         imageUrl: PLACEHOLDER_REDESIGN,
+        available: false,
         description:
           'The blank wall is layered with slim evergreens by the window, blue hydrangeas at mid-height, ' +
           'and a front ribbon of lavender and black-eyed Susans over fresh dark mulch. Soft catmint hugs the ' +

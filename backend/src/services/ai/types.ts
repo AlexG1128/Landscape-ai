@@ -7,6 +7,8 @@ export interface AnalyzeInput {
   zone: number;
   lat?: number;
   lng?: number;
+  /** Optional free-text note from the user describing what they want. */
+  note?: string;
 }
 
 /**
