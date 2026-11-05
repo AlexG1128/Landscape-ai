@@ -29,6 +29,11 @@ export default function History() {
   const [entries, setEntries] = useState<HistoryEntry[]>([]);
   const [menuEntry, setMenuEntry] = useState<HistoryEntry | null>(null);
   const [moveMode, setMoveMode] = useState(false);
+  // Folders start collapsed; tap a folder to expand it.
+  const [openFolders, setOpenFolders] = useState<Record<string, boolean>>({});
+
+  const toggleFolder = (id: string) =>
+    setOpenFolders((prev) => ({ ...prev, [id]: !prev[id] }));
 
   const reload = useCallback(async () => {
     const [f, e] = await Promise.all([getFolders(), getEntries()]);
@@ -134,18 +139,29 @@ export default function History() {
           <Text style={styles.sectionTitle}>🗂️ Folders</Text>
           {folders.map((folder) => {
             const items = entries.filter((e) => e.folderId === folder.id);
+            const open = !!openFolders[folder.id];
             return (
               <View key={folder.id} style={{ marginBottom: theme.spacing(1) }}>
-                <View style={styles.folderHead}>
-                  <Ionicons name="folder" size={15} color={theme.colors.primary} />
+                <Pressable style={styles.folderHead} onPress={() => toggleFolder(folder.id)}>
+                  <Ionicons
+                    name={open ? 'folder-open' : 'folder'}
+                    size={15}
+                    color={theme.colors.primary}
+                  />
                   <Text style={styles.folderName}>{folder.name}</Text>
                   <Text style={styles.count}>{items.length}</Text>
-                </View>
-                {items.length === 0 ? (
-                  <Text style={styles.folderEmpty}>No designs in this folder yet.</Text>
-                ) : (
-                  items.map((e) => renderRow(e))
-                )}
+                  <Ionicons
+                    name={open ? 'chevron-up' : 'chevron-down'}
+                    size={15}
+                    color={theme.colors.textFaint}
+                  />
+                </Pressable>
+                {open &&
+                  (items.length === 0 ? (
+                    <Text style={styles.folderEmpty}>No designs in this folder yet.</Text>
+                  ) : (
+                    items.map((e) => renderRow(e))
+                  ))}
               </View>
             );
           })}

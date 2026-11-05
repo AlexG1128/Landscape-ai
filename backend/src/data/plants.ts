@@ -977,14 +977,19 @@ function loadPlantImages(): Record<string, string> {
 
 const PLANT_IMAGES = loadPlantImages();
 
+// Set to true only if you wire up a hotlink-friendly photo source (see
+// plant-photos.ts). Wikimedia blocks direct hotlinking (HTTP 403), so this is
+// off by default and the app uses its clean illustrations instead.
+const USE_FREE_PHOTOS = false;
+
 /**
  * Image priority per plant:
  *   1. Generated photo from plant-images.json (your own Gemini run), else
- *   2. Free Wikimedia Commons photo, else
+ *   2. A free photo source (only if USE_FREE_PHOTOS is enabled), else
  *   3. (undefined) → the app shows its generated illustration.
  */
 export const PLANTS: Plant[] = BASE_PLANTS.map((p) => {
-  const imageUrl = PLANT_IMAGES[p.id] ?? photoFor(p.id);
+  const imageUrl = PLANT_IMAGES[p.id] ?? (USE_FREE_PHOTOS ? photoFor(p.id) : undefined);
   return imageUrl ? { ...p, imageUrl } : p;
 });
 
