@@ -138,18 +138,13 @@ export default function History() {
         )}
 
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>🕘 Recent</Text>
-          {recent.map((e) => renderRow(e, true))}
-        </View>
-
-        <View style={styles.section}>
           <Text style={styles.sectionTitle}>🗂️ Folders</Text>
           {folders.map((folder) => {
             const items = entries.filter((e) => e.folderId === folder.id);
             return (
-              <View key={folder.id} style={{ marginBottom: theme.spacing(2) }}>
+              <View key={folder.id} style={{ marginBottom: theme.spacing(1.5) }}>
                 <View style={styles.folderHead}>
-                  <Ionicons name="folder" size={16} color={theme.colors.primary} />
+                  <Ionicons name="folder" size={15} color={theme.colors.primary} />
                   <Text style={styles.folderName}>{folder.name}</Text>
                   <Text style={styles.count}>{items.length}</Text>
                 </View>
@@ -161,6 +156,11 @@ export default function History() {
               </View>
             );
           })}
+        </View>
+
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>🕘 Recent</Text>
+          {recent.map((e) => renderRow(e, true))}
         </View>
         <View style={{ height: 20 }} />
       </ScrollView>
@@ -228,25 +228,24 @@ function MenuItem({
 
 const styles = StyleSheet.create({
   container: { padding: theme.spacing(2) },
-  section: { marginBottom: theme.spacing(2) },
-  sectionTitle: { ...theme.font.h2, color: theme.colors.text, marginBottom: theme.spacing(1.5) },
+  section: { marginBottom: theme.spacing(1.5) },
+  sectionTitle: { ...theme.font.h3, color: theme.colors.text, marginBottom: theme.spacing(1) },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: theme.colors.surface,
-    borderRadius: theme.radius.md,
+    borderRadius: theme.radius.sm,
     borderWidth: 1,
     borderColor: theme.colors.border,
-    marginBottom: 10,
-    ...theme.shadow.card,
+    marginBottom: 7,
   },
-  rowMain: { flex: 1, flexDirection: 'row', alignItems: 'center', padding: 10 },
-  thumb: { width: 56, height: 56, borderRadius: theme.radius.sm, marginRight: 12 },
-  rowTitle: { ...theme.font.h3, color: theme.colors.text, fontSize: 15 },
-  rowMeta: { color: theme.colors.textMuted, fontSize: 12, marginTop: 2 },
-  menuBtn: { padding: 14 },
-  folderHead: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 10 },
-  folderName: { ...theme.font.h3, color: theme.colors.text, flex: 1 },
+  rowMain: { flex: 1, flexDirection: 'row', alignItems: 'center', padding: 7 },
+  thumb: { width: 40, height: 40, borderRadius: 8, marginRight: 10 },
+  rowTitle: { color: theme.colors.text, fontSize: 14, fontWeight: '700' },
+  rowMeta: { color: theme.colors.textMuted, fontSize: 11, marginTop: 1 },
+  menuBtn: { paddingVertical: 10, paddingHorizontal: 12 },
+  folderHead: { flexDirection: 'row', alignItems: 'center', gap: 7, marginBottom: 7 },
+  folderName: { color: theme.colors.text, fontWeight: '700', fontSize: 15, flex: 1 },
   count: {
     backgroundColor: theme.colors.primarySoft,
     color: theme.colors.primaryDark,

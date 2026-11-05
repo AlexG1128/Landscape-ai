@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import {
   ScrollView,
   Text,
@@ -13,14 +13,21 @@ import {
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import * as Location from 'expo-location';
-import { useRouter } from 'expo-router';
+import { useRouter, useFocusEffect } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { api } from '../../src/api';
 import { theme } from '../../src/theme';
 import { heroImage } from '../../src/images';
 import { Button, Card } from '../../src/components';
-import { getFolders, addFolder, addEntry, type Folder } from '../../src/history';
+import {
+  getFolders,
+  getEntries,
+  addFolder,
+  addEntry,
+  type Folder,
+  type HistoryEntry,
+} from '../../src/history';
 
 export default function Home() {
   const router = useRouter();
@@ -29,14 +36,25 @@ export default function Home() {
   const [note, setNote] = useState('');
   const [folders, setFolders] = useState<Folder[]>([]);
   const [folderId, setFolderId] = useState<string>('front-yard');
+  const [entries, setEntries] = useState<HistoryEntry[]>([]);
+  const [expandedFolder, setExpandedFolder] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    getFolders().then((f) => {
-      setFolders(f);
-      if (f[0]) setFolderId(f[0].id);
-    });
-  }, []);
+  // Refresh folders + saved designs whenever Home regains focus.
+  useFocusEffect(
+    useCallback(() => {
+      let active = true;
+      Promise.all([getFolders(), getEntries()]).then(([f, e]) => {
+        if (!active) return;
+        setFolders(f);
+        setEntries(e);
+        setFolderId((cur) => (f.some((x) => x.id === cur) ? cur : f[0]?.id ?? cur));
+      });
+      return () => {
+        active = false;
+      };
+    }, []),
+  );
 
   async function pickImage(fromCamera: boolean) {
     const perm = fromCamera
@@ -217,6 +235,62 @@ export default function Home() {
             </View>
           )}
         </Card>
+
+        {/* Your Folders — quick access to previous designs */}
+        {entries.length > 0 && (
+          <View style={styles.foldersSection}>
+            <Text style={styles.foldersHeading}>Your Folders</Text>
+            {folders.map((f) => {
+              const items = entries.filter((e) => e.folderId === f.id);
+              const open = expandedFolder === f.id;
+              return (
+                <View key={f.id} style={styles.folderCard}>
+                  <Pressable
+                    style={styles.folderCardHead}
+                    onPress={() => setExpandedFolder(open ? null : f.id)}
+                  >
+                    <Ionicons
+                      name={open ? 'folder-open' : 'folder'}
+                      size={18}
+                      color={theme.colors.primary}
+                    />
+                    <Text style={styles.folderCardName}>{f.name}</Text>
+                    <Text style={styles.folderCardCount}>{items.length}</Text>
+                    <Ionicons
+                      name={open ? 'chevron-up' : 'chevron-down'}
+                      size={16}
+                      color={theme.colors.textFaint}
+                    />
+                  </Pressable>
+                  {open &&
+                    (items.length === 0 ? (
+                      <Text style={styles.folderCardEmpty}>No designs here yet.</Text>
+                    ) : (
+                      items.map((e) => (
+                        <Pressable
+                          key={e.id}
+                          style={styles.folderItem}
+                          onPress={() => router.push(`/result/${e.id}`)}
+                        >
+                          <Image source={{ uri: e.imageUri }} style={styles.folderItemThumb} />
+                          <View style={{ flex: 1 }}>
+                            <Text style={styles.folderItemTitle} numberOfLines={1}>
+                              {e.pinned ? '📌 ' : ''}
+                              {e.note || 'Yard design'}
+                            </Text>
+                            <Text style={styles.folderItemMeta}>
+                              {new Date(e.createdAt).toLocaleDateString()}
+                            </Text>
+                          </View>
+                          <Ionicons name="chevron-forward" size={16} color={theme.colors.textFaint} />
+                        </Pressable>
+                      ))
+                    ))}
+                </View>
+              );
+            })}
+          </View>
+        )}
       </ScrollView>
     </SafeAreaView>
   );
@@ -310,4 +384,50 @@ const styles = StyleSheet.create({
   },
   loading: { flexDirection: 'row', alignItems: 'center', gap: 10, marginTop: theme.spacing(2) },
   loadingText: { color: theme.colors.textMuted, fontSize: 13 },
+
+  foldersSection: { marginTop: theme.spacing(1) },
+  foldersHeading: { ...theme.font.h3, color: theme.colors.text, marginBottom: theme.spacing(1.5) },
+  folderCard: {
+    backgroundColor: theme.colors.surface,
+    borderRadius: theme.radius.md,
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+    marginBottom: 10,
+    overflow: 'hidden',
+    ...theme.shadow.card,
+  },
+  folderCardHead: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    padding: theme.spacing(1.75),
+  },
+  folderCardName: { flex: 1, color: theme.colors.text, fontWeight: '700', fontSize: 15 },
+  folderCardCount: {
+    backgroundColor: theme.colors.primarySoft,
+    color: theme.colors.primaryDark,
+    fontWeight: '700',
+    fontSize: 12,
+    paddingHorizontal: 9,
+    paddingVertical: 2,
+    borderRadius: theme.radius.pill,
+  },
+  folderCardEmpty: {
+    color: theme.colors.textFaint,
+    fontSize: 13,
+    paddingHorizontal: theme.spacing(1.75),
+    paddingBottom: theme.spacing(1.75),
+  },
+  folderItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    paddingHorizontal: theme.spacing(1.75),
+    paddingVertical: 8,
+    borderTopWidth: 1,
+    borderTopColor: theme.colors.border,
+  },
+  folderItemThumb: { width: 36, height: 36, borderRadius: 8 },
+  folderItemTitle: { color: theme.colors.text, fontWeight: '600', fontSize: 14 },
+  folderItemMeta: { color: theme.colors.textMuted, fontSize: 11, marginTop: 1 },
 });
