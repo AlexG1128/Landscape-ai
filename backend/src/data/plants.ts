@@ -1,5 +1,6 @@
 import type { Plant } from '../types.js';
 import { createRequire } from 'node:module';
+import { photoFor } from './plant-photos.js';
 
 /**
  * Curated starter catalog. In production this can be swapped for a plant API
@@ -976,9 +977,16 @@ function loadPlantImages(): Record<string, string> {
 
 const PLANT_IMAGES = loadPlantImages();
 
-export const PLANTS: Plant[] = BASE_PLANTS.map((p) =>
-  PLANT_IMAGES[p.id] ? { ...p, imageUrl: PLANT_IMAGES[p.id] } : p,
-);
+/**
+ * Image priority per plant:
+ *   1. Generated photo from plant-images.json (your own Gemini run), else
+ *   2. Free Wikimedia Commons photo, else
+ *   3. (undefined) → the app shows its generated illustration.
+ */
+export const PLANTS: Plant[] = BASE_PLANTS.map((p) => {
+  const imageUrl = PLANT_IMAGES[p.id] ?? photoFor(p.id);
+  return imageUrl ? { ...p, imageUrl } : p;
+});
 
 export const getPlantById = (id: string): Plant | undefined =>
   PLANTS.find((p) => p.id === id);

@@ -96,7 +96,11 @@ If either Gemini call fails (bad key, quota, network), the backend automatically
 
 ## 🖼️ Generating real plant photos (optional)
 
-The catalog ships with elegant generated **illustrations** for every plant. To replace them with **real AI-generated photos** using your Gemini key, run the generator on your Mac:
+The catalog ships with **real free photos** from Wikimedia Commons for 68 of the 69 plants (the rest fall back to elegant generated illustrations). No key or setup required.
+
+Image priority per plant: your generated photo (below) → free Wikimedia photo → illustration.
+
+To replace them with **your own AI-generated photos** using your Gemini key, run the generator on your Mac:
 
 ```bash
 cd backend
