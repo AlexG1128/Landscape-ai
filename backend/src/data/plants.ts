@@ -1,5 +1,7 @@
 import type { Plant } from '../types.js';
-import { createRequire } from 'node:module';
+import { readFileSync, existsSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { photoFor } from './plant-photos.js';
 
 /**
@@ -968,8 +970,10 @@ const BASE_PLANTS: Plant[] = [
  */
 function loadPlantImages(): Record<string, string> {
   try {
-    const require = createRequire(import.meta.url);
-    return require('./plant-images.json') as Record<string, string>;
+    const here = dirname(fileURLToPath(import.meta.url));
+    const file = join(here, 'plant-images.json');
+    if (!existsSync(file)) return {};
+    return JSON.parse(readFileSync(file, 'utf8')) as Record<string, string>;
   } catch {
     return {};
   }
