@@ -53,19 +53,25 @@ export default function Catalog() {
         />
       </View>
 
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filters}>
-        {CATEGORIES.map((c) => (
-          <Pressable
-            key={c}
-            onPress={() => setCategory(c)}
-            style={[styles.filter, category === c && styles.filterActive]}
-          >
-            <Text style={[styles.filterText, category === c && styles.filterTextActive]}>
-              {c === 'all' ? 'All' : `${categoryEmoji[c] ?? ''} ${c}`}
-            </Text>
-          </Pressable>
-        ))}
-      </ScrollView>
+      <View style={styles.filtersWrap}>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.filtersContent}
+        >
+          {CATEGORIES.map((c) => (
+            <Pressable
+              key={c}
+              onPress={() => setCategory(c)}
+              style={[styles.filter, category === c && styles.filterActive]}
+            >
+              <Text style={[styles.filterText, category === c && styles.filterTextActive]}>
+                {c === 'all' ? 'All' : `${categoryEmoji[c] ?? ''} ${c}`}
+              </Text>
+            </Pressable>
+          ))}
+        </ScrollView>
+      </View>
 
       {loading && <ActivityIndicator color={theme.colors.primary} style={{ marginTop: 30 }} />}
       {error && <Text style={styles.error}>{error}</Text>}
@@ -120,9 +126,9 @@ const styles = StyleSheet.create({
     marginTop: theme.spacing(1),
   },
   input: { flex: 1, paddingVertical: 12, fontSize: 15, color: theme.colors.text },
-  filters: { marginVertical: 12, flexGrow: 0 },
+  filtersWrap: { height: 42, marginVertical: 12 },
+  filtersContent: { alignItems: 'center', paddingRight: 8 },
   filter: {
-    paddingVertical: 8,
     paddingHorizontal: 14,
     borderRadius: theme.radius.pill,
     backgroundColor: theme.colors.surface,

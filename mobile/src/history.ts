@@ -14,6 +14,7 @@ export interface HistoryEntry {
   note?: string;
   imageUri: string; // the original uploaded photo
   result: AnalyzeResponse;
+  pinned?: boolean;
 }
 
 export interface Folder {
@@ -85,4 +86,19 @@ export async function addEntry(input: {
 export async function deleteEntry(id: string): Promise<void> {
   const entries = await getEntries();
   await AsyncStorage.setItem(ENTRIES_KEY, JSON.stringify(entries.filter((e) => e.id !== id)));
+}
+
+async function updateEntry(id: string, patch: Partial<HistoryEntry>): Promise<void> {
+  const entries = await getEntries();
+  const next = entries.map((e) => (e.id === id ? { ...e, ...patch } : e));
+  await AsyncStorage.setItem(ENTRIES_KEY, JSON.stringify(next));
+}
+
+export async function togglePin(id: string): Promise<void> {
+  const entry = await getEntry(id);
+  if (entry) await updateEntry(id, { pinned: !entry.pinned });
+}
+
+export async function moveEntry(id: string, folderId: string): Promise<void> {
+  await updateEntry(id, { folderId });
 }
