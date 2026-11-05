@@ -31,14 +31,12 @@ export function plantImage(category: string, name: string, imageUrl?: string): s
     <text x="200" y="175" font-size="110" text-anchor="middle">${emoji}</text>
   </svg>`;
 
-  return 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
+  return svgToDataUri(svg);
 }
 
 /** Elegant hero splash for the home screen. */
-export const heroImage =
-  'data:image/svg+xml;utf8,' +
-  encodeURIComponent(
-    `<svg xmlns="http://www.w3.org/2000/svg" width="800" height="520" viewBox="0 0 800 520">
+export const heroImage = svgToDataUri(
+  `<svg xmlns="http://www.w3.org/2000/svg" width="800" height="520" viewBox="0 0 800 520">
       <defs>
         <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0" stop-color="#bfe0c8"/>
@@ -60,7 +58,27 @@ export const heroImage =
       <g fill="#d98bb0"><circle cx="300" cy="430" r="9"/><circle cx="330" cy="440" r="9"/><circle cx="360" cy="432" r="9"/></g>
       <g fill="#c7a44a"><circle cx="470" cy="445" r="8"/><circle cx="500" cy="438" r="8"/></g>
     </svg>`,
-  );
+);
+
+/**
+ * Encode an SVG string as a base64 data URI. Base64 renders reliably in both
+ * the browser (react-native-web) and on native, unlike the `;utf8,` form which
+ * browsers often refuse to display.
+ */
+function svgToDataUri(svg: string): string {
+  const base64 = base64Encode(svg);
+  return `data:image/svg+xml;base64,${base64}`;
+}
+
+/** Cross-platform base64 encoder (btoa on web, Buffer on native/Node). */
+function base64Encode(input: string): string {
+  // Encode as UTF-8 bytes first so emoji/accents survive.
+  const utf8 = unescape(encodeURIComponent(input));
+  const g = globalThis as { btoa?: (s: string) => string };
+  if (typeof g.btoa === 'function') return g.btoa(utf8);
+  // Native (Hermes) / Node fallback.
+  return Buffer.from(utf8, 'binary').toString('base64');
+}
 
 /** Lighten (amount>0) or darken (amount<0) a hex color. */
 function shade(hex: string, amount: number): string {
